@@ -9,10 +9,18 @@ jobs:
   build:
     name: Build and Deploy Images to ECR
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+          verbose: false
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -22,17 +30,22 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
+      - name: Verify AWS Configuration
+        run: |
+          aws configure list
+          echo "AWS Region is set to: $AWS_REGION"
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Create MySQL Repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
+          aws ecr describe-repositories --repository-names my-mysql-repo --region us-east-1 || aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
+          aws ecr describe-repositories --repository-names my-webapp-repo --region us-east-1 || aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
 
       - name: Build, Tag, and Push MySQL Image
         env:
