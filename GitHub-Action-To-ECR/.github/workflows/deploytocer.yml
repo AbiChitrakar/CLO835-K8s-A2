@@ -1,14 +1,10 @@
-name: Deploy to ECR
-
-on:
-  push:
-    branches:
-      - Trigger-GitHub-Action-to-Push-Images
-
 jobs:
   build:
     name: Build and Deploy Images to ECR
     runs-on: ubuntu-latest
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1 # Set the region globally for the job
 
     steps:
       - name: Check out code
@@ -21,16 +17,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          AWS_REGION: us-east-1
 
       - name: Create MySQL Repository if it doesn't exist
         run: |
-          aws configure set region us-east-1
           aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
-          aws configure set region us-east-1
           aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
 
       - name: Build, Tag, and Push MySQL Image
@@ -38,7 +31,6 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MYSQL_ECR_REPOSITORY: my-mysql-repo
           MYSQL_IMAGE_TAG: latest
-          AWS_REGION: us-east-1
         run: |
           echo "Building MySQL Image..."
           docker build -f Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
@@ -51,7 +43,6 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           WEBAPP_ECR_REPOSITORY: my-webapp-repo
           WEBAPP_IMAGE_TAG: latest
-          AWS_REGION: us-east-1
         run: |
           echo "Building WebApp Image..."
           docker build -f Dockerfile -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG .
