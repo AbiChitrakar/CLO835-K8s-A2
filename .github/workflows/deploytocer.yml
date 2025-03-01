@@ -49,7 +49,7 @@ jobs:
           MYSQL_IMAGE_TAG: latest
         run: |
           echo "Building MySQL Image..."
-          docker build -f GitHub-Action-To-ECR/Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
+          docker build -f Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
 
           echo "Pushing MySQL Image to ECR..."
           docker push $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG
@@ -61,7 +61,7 @@ jobs:
           WEBAPP_IMAGE_TAG: latest
         run: |
           echo "Building WebApp Image..."
-          docker build -f GitHub-Action-To-ECR/Dockerfile -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG .
+          docker build -f Dockerfile -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG .
 
           echo "Pushing WebApp Image to ECR..."
           docker push $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG
