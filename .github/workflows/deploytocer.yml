@@ -21,11 +21,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          AWS_REGION: us-east-1
+          AWS_DEFAULT_REGION: us-east-1
+
+      - name: Print Environment Variables
+        run: |
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+          echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
+          echo "AWS_SESSION_TOKEN: $AWS_SESSION_TOKEN"
+          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"
+          aws configure set region us-east-1
+          aws configure list
 
       - name: Create MySQL Repository if it doesn't exist
-        with:
-          aws-region: aws-region-1
         run: |
           aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
 
