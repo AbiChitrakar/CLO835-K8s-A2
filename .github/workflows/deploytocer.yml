@@ -23,11 +23,9 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_REGION: us-east-1
 
-      - name: Configure AWS Region
-        run: |
-          aws configure set region us-east-1
-
       - name: Create MySQL Repository if it doesn't exist
+        with:
+          aws-region: aws-region-1
         run: |
           aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
 
