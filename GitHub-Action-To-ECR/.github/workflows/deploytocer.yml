@@ -24,16 +24,16 @@ jobs:
           AWS_REGION: us-east-1
 
       - name: Create MySQL Repository if it doesn't exist
+        env:
+          AWS_REGION: us-east-1
         run: |
           aws ecr describe-repositories --repository-names my-mysql-repo --region $AWS_REGION || aws ecr create-repository --repository-name my-mysql-repo --region $AWS_REGION
-        env:
-          AWS_REGION: us-east-1
 
       - name: Create WebApp Repository if it doesn't exist
-        run: |
-          aws ecr describe-repositories --repository-names my-webapp-repo --region $AWS_REGION || aws ecr create-repository --repository-name my-webapp-repo --region $AWS_REGION
         env:
           AWS_REGION: us-east-1
+        run: |
+          aws ecr describe-repositories --repository-names my-webapp-repo --region $AWS_REGION || aws ecr create-repository --repository-name my-webapp-repo --region $AWS_REGION
 
       - name: Build, Tag, and Push MySQL Image
         env:
