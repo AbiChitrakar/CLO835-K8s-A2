@@ -21,24 +21,22 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          AWS_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Create MySQL Repository if it doesn't exist
         run: |
-          aws configure set region us-east-1
-          aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
+          aws ecr describe-repositories --repository-names my-mysql-repo --region ${{ secrets.AWS_DEFAULT_REGION }} || aws ecr create-repository --repository-name my-mysql-repo --region ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
-          aws configure set region us-east-1
-          aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
+          aws ecr describe-repositories --repository-names my-webapp-repo --region ${{ secrets.AWS_DEFAULT_REGION }} || aws ecr create-repository --repository-name my-webapp-repo --region ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Build, Tag, and Push MySQL Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MYSQL_ECR_REPOSITORY: my-mysql-repo
           MYSQL_IMAGE_TAG: latest
-          AWS_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
           echo "Building MySQL Image..."
           docker build -f Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
@@ -51,7 +49,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           WEBAPP_ECR_REPOSITORY: my-webapp-repo
           WEBAPP_IMAGE_TAG: latest
-          AWS_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
           echo "Building WebApp Image..."
           docker build -f Dockerfile -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG .
