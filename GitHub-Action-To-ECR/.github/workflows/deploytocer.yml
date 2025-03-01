@@ -23,22 +23,18 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_DEFAULT_REGION: us-east-1
 
-      - name: Print Environment Variables
-        run: |
-          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
-          echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
-          echo "AWS_SESSION_TOKEN: $AWS_SESSION_TOKEN"
-          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"
-          aws configure set region us-east-1
-          aws configure list
-
       - name: Create MySQL Repository if it doesn't exist
+          echo "Logging into Amazon ECR..."
+          aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          aws configure set aws_session_token "${{ secrets.AWS_SESSION_TOKEN }}"
+          aws configure set region us-east-1
         run: |
-          aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
+          aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
-          aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
+          aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
 
       - name: Build, Tag, and Push MySQL Image
         env:
