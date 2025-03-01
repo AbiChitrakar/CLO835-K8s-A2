@@ -34,11 +34,11 @@ jobs:
 
       - name: Create MySQL Repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names my-mysql-repo --region us-east-1 || aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
+          aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names my-webapp-repo --region us-east-1 || aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
+          aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
 
       - name: Build, Tag, and Push MySQL Image
         env:
