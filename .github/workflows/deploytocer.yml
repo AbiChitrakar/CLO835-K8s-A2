@@ -46,7 +46,7 @@ jobs:
           MYSQL_IMAGE_TAG: latest
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
-          echo "Building MySQL Image..."
+          echo "Building MySQL Image.."
           docker build -f Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
 
           echo "Pushing MySQL Image to ECR..."
