@@ -23,9 +23,17 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
+      - name: Debug Region - MySQL
+        run: |
+          echo "AWS_DEFAULT_REGION (MySQL): ${{ secrets.AWS_DEFAULT_REGION }}"
+
       - name: Create MySQL Repository if it doesn't exist
         run: |
           aws ecr describe-repositories --repository-names my-mysql-repo --region ${{ secrets.AWS_DEFAULT_REGION }} || aws ecr create-repository --repository-name my-mysql-repo --region ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Debug Region - WebApp
+        run: |
+          echo "AWS_DEFAULT_REGION (WebApp): ${{ secrets.AWS_DEFAULT_REGION }}"
 
       - name: Create WebApp Repository if it doesn't exist
         run: |
@@ -56,3 +64,11 @@ jobs:
 
           echo "Pushing WebApp Image to ECR..."
           docker push $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG
+
+      - name: Test Region - STS
+        run: |
+          echo "AWS_DEFAULT_REGION (STS Test): ${{ secrets.AWS_DEFAULT_REGION }}"
+          aws sts get-caller-identity --region ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: AWS CLI Version
+        run: aws --version
