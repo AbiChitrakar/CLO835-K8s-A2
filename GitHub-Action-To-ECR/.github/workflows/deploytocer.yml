@@ -8,12 +8,37 @@ on:
 jobs:
   build:
     name: Build and Deploy Images to ECR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Using a specific version to avoid GitHub-hosted runner issues
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
+      # Debug AWS CLI and Credentials
+      - name: Debug AWS CLI
+        run: |
+          echo "Checking AWS CLI version..."
+          aws --version
+
+          echo "Checking AWS region..."
+          echo "AWS_REGION: $AWS_REGION"
+          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"
+
+          echo "Checking AWS credentials..."
+          aws sts get-caller-identity || echo "AWS credentials are NOT set correctly!"
+
+          echo "Checking AWS config..."
+          aws configure list
+
+      # Configure AWS CLI with credentials and region
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region us-east-1
+          aws configure list  # Print the configuration for verification
+
+      # Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -23,20 +48,19 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_REGION: us-east-1
 
+      # Create MySQL Repository if it doesn't exist
       - name: Create MySQL Repository if it doesn't exist
-        env:
-          AWS_REGION: us-east-1
         run: |
-          aws configure set region us-east-1
-          aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
+          aws ecr describe-repositories --repository-names my-mysql-repo --region us-east-1 || \
+          aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
 
+      # Create WebApp Repository if it doesn't exist
       - name: Create WebApp Repository if it doesn't exist
-        env:
-          AWS_REGION: us-east-1
         run: |
-          aws configure set region us-east-1
-          aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
+          aws ecr describe-repositories --repository-names my-webapp-repo --region us-east-1 || \
+          aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
 
+      # Build, Tag, and Push MySQL Image
       - name: Build, Tag, and Push MySQL Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -50,6 +74,7 @@ jobs:
           echo "Pushing MySQL Image to ECR..."
           docker push $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG
 
+      # Build, Tag, and Push WebApp Image
       - name: Build, Tag, and Push WebApp Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
