@@ -14,10 +14,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set AWS Region
-        run: |
-          export AWS_DEFAULT_REGION=us-east-1
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -26,26 +22,23 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_REGION: us-east-1
-          AWS_DEFAULT_REGION: us-east-1
 
       - name: Create MySQL Repository if it doesn't exist
-        env:
-          AWS_DEFAULT_REGION: us-east-1
         run: |
-          aws ecr describe-repositories --repository-names my-mysql-repo --region us-east-1 || aws ecr create-repository --repository-name my-mysql-repo --region us-east-1
+          aws configure set region us-east-1
+          aws ecr describe-repositories --repository-names my-mysql-repo || aws ecr create-repository --repository-name my-mysql-repo
 
       - name: Create WebApp Repository if it doesn't exist
-        env:
-          AWS_DEFAULT_REGION: us-east-1
         run: |
-          aws ecr describe-repositories --repository-names my-webapp-repo --region us-east-1 || aws ecr create-repository --repository-name my-webapp-repo --region us-east-1
+          aws configure set region us-east-1
+          aws ecr describe-repositories --repository-names my-webapp-repo || aws ecr create-repository --repository-name my-webapp-repo
 
       - name: Build, Tag, and Push MySQL Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MYSQL_ECR_REPOSITORY: my-mysql-repo
           MYSQL_IMAGE_TAG: latest
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
         run: |
           echo "Building MySQL Image..."
           docker build -f Dockerfile_mysql -t $ECR_REGISTRY/$MYSQL_ECR_REPOSITORY:$MYSQL_IMAGE_TAG .
@@ -58,7 +51,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           WEBAPP_ECR_REPOSITORY: my-webapp-repo
           WEBAPP_IMAGE_TAG: latest
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
         run: |
           echo "Building WebApp Image..."
           docker build -f Dockerfile -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$WEBAPP_IMAGE_TAG .
