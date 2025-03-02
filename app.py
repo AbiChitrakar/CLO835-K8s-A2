@@ -43,17 +43,33 @@ COLOR = random.choice(["red", "green", "blue", "blue2", "darkblue", "pink", "lim
 def home():
     return render_template('addemp.html', color=color_codes[COLOR])
 
+@app.route("/red", methods=['GET', 'POST'])
+def redPath():
+    return render_template('addemp.html', color=color_codes["red"])
+
+@app.route("/green", methods=['GET', 'POST'])
+def greenPath():
+    return render_template('addemp.html', color=color_codes["green"])
+
 @app.route("/blue", methods=['GET', 'POST'])
 def bluePath():
-    return render_template('addemp.html', color=color_codes[COLOR])
+    return render_template('addemp.html', color=color_codes["blue"])
+
+@app.route("/blue2", methods=['GET', 'POST'])
+def blue2Path():
+    return render_template('addemp.html', color=color_codes["blue2"])
 
 @app.route("/pink", methods=['GET', 'POST'])
 def pinkPath():
-    return render_template('addemp.html', color=color_codes[COLOR])
+    return render_template('addemp.html', color=color_codes["pink"])
+
+@app.route("/darkblue", methods=['GET', 'POST'])
+def darkbluePath():
+    return render_template('addemp.html', color=color_codes["darkblue"])
 
 @app.route("/lime", methods=['GET', 'POST'])
 def limePath():
-    return render_template('addemp.html', color=color_codes[COLOR])
+    return render_template('addemp.html', color=color_codes["lime"])
 
 @app.route("/about", methods=['GET','POST'])
 def about():
