@@ -4,16 +4,16 @@ metadata:
   name: webapp-replicaset
   namespace: a2
   labels:
-    app: webapp
+    app: employees
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: webapp
+      app: employees
   template:
     metadata:
       labels:
-        app: webapp
+        app: employees
     spec:
       containers:
       - name: webapp
@@ -33,5 +33,5 @@ spec:
         - name: APP_COLOR
           value: "blue"
         ports:
-        - containerPort: 80
+        - containerPort: 8080
 
