@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: 858633162811.dkr.ecr.us-east-1.amazonaws.com/my-webapp-repo:latest
+        image: 858633162811.dkr.ecr.us-east-1.amazonaws.com/my-webapp-repo:v0.1
         imagePullPolicy: Never
         env:
         - name: DBHOST
