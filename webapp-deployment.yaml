@@ -4,20 +4,20 @@ metadata:
   name: webapp-deployment
   namespace: a2
   labels:
-    app: webapp
+    app: employees
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: webapp
+      app: employees
   template:
     metadata:
       labels:
-        app: webapp
+        app: employees
     spec:
       containers:
       - name: webapp
-        image: 858633162811.dkr.ecr.us-east-1.amazonaws.com/my-webapp-repo:latest
+        image: 858633162811.dkr.ecr.us-east-1.amazonaws.com/my-webapp-repo:v0.1
         imagePullPolicy: Never
         env:
         - name: DBHOST
